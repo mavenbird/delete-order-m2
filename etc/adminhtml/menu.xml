@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Mavenbird Technologies Private Limited
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://mavenbird.com/Mavenbird-Module-License.txt
+ *
+ * =================================================================
+ *
+ * @category   Mavenbird
+ * @package    Mavenbird_DeleteOrder
+ * @author     Mavenbird Team
+ * @copyright  Copyright (c) 2018-2024 Mavenbird Technologies Private Limited ( http://mavenbird.com )
+ * @license    http://mavenbird.com/Mavenbird-Module-License.txt
+ */
+ -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Backend/etc/menu.xsd">
+    <menu> 
+        <add id="Mavenbird_DeleteOrder::deleteorder" 
+             title="Mavenbird - Delete Order" 
+             module="Mavenbird_DeleteOrder" 
+             parent="Magento_Sales::sales" 
+             sortOrder="10" 
+             resource="Mavenbird_DeleteOrder::deleteorder" 
+             dependsOnConfig="deleteorder/general/enable"
+             />
+         
+        <add id="Mavenbird_DeleteOrder::config_deleteorder" 
+             title="Configuration" 
+             module="Mavenbird_DeleteOrder" 
+             sortOrder="10" 
+             parent="Mavenbird_DeleteOrder::deleteorder" 
+             action="adminhtml/system_config/edit/section/deleteorder" 
+             resource="Mavenbird_DeleteOrder::config_deleteorder"
+             dependsOnConfig="deleteorder/general/enable"
+             />
+    </menu>
+</config>
