@@ -2,7 +2,8 @@
     "name": "mavenbird/module-delete-order",
     "description": "Magento 2 module for deleting orders, providing admins with the ability to manage and clean up orders.",
     "require": {
-        "php": ">=8.0.0"
+        "php": ">=8.0.0",
+        "mavenbird/module-core": "*"
     },
     "type": "magento2-module",
     "version": "1.1.1",
