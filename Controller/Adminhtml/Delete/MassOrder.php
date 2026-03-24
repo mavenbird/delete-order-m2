@@ -20,13 +20,12 @@
 
 namespace Mavenbird\DeleteOrder\Controller\Adminhtml\Delete;
 
-use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Backend\App\Action\Context;
 use Magento\Ui\Component\MassAction\Filter;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
 use Magento\Sales\Api\OrderManagementInterface;
 
-class MassOrder extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
+class MassOrder extends AbstractMassDelete
 {
     /**
      * @var OrderManagementInterface
@@ -68,49 +67,33 @@ class MassOrder extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAc
         $this->delete = $delete;
     }
 
-    /**
-     * Mass Action
-     *
-     * @param AbstractCollection $collection
-     * @return void
-     */
-    protected function massAction(AbstractCollection $collection)
+    protected function getMassCollectionFactory()
     {
-        $collectionInvoice = $this->filter->getCollection($this->orderCollectionFactory->create());
-
-        foreach ($collectionInvoice as $order) {
-            $orderId = $order->getId();
-            $incrementId = $order->getIncrementId();
-            try {
-                $this->deleteOrder($orderId);
-                $this->messageManager->addSuccessMessage(__('Successfully deleted order #%1.', $incrementId));
-            } catch (\Exception $e) {
-                $this->messageManager->addErrorMessage(__('Error delete order #%1.', $incrementId));
-            }
-        }
-        $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath('sales/order/');
-        return $resultRedirect;
+        return $this->orderCollectionFactory;
     }
 
-    /**
-     * Allowed
-     *
-     * @return void
-     */
-    protected function _isAllowed()
+    protected function getIncrementIdByEntity($entity, $entityId)
     {
-        return $this->_authorization->isAllowed('Mavenbird_DeleteOrder::delete_order');
+        return (string)$entity->getIncrementId();
     }
 
-    /**
-     * Delete Order
-     *
-     * @param [type] $orderId
-     * @return void
-     */
-    protected function deleteOrder($orderId)
+    protected function deleteEntity($entityId)
     {
-        $this->delete->deleteOrder($orderId);
+        return $this->delete->deleteOrder($entityId);
+    }
+
+    protected function getSuccessMessageTemplate()
+    {
+        return 'Successfully deleted order #%1.';
+    }
+
+    protected function getErrorMessageTemplate()
+    {
+        return 'Error delete order #%1.';
+    }
+
+    protected function getDefaultRedirectPath()
+    {
+        return 'sales/order/';
     }
 }

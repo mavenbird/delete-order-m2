@@ -21,13 +21,12 @@
 namespace Mavenbird\DeleteOrder\Controller\Adminhtml\Delete;
 
 use Mavenbird\DeleteOrder\Model\Shipment\Delete;
-use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Backend\App\Action\Context;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
 use Magento\Ui\Component\MassAction\Filter;
 
-class MassShipment extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
+class MassShipment extends AbstractMassDelete
 {
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\Shipment\CollectionFactory
@@ -67,83 +66,46 @@ class MassShipment extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMas
         $this->delete = $delete;
     }
 
-    /**
-     * Mass action
-     *
-     * @param AbstractCollection $collection
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Redirect|\Magento\Framework\Controller\ResultInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    protected function massAction(AbstractCollection $collection)
+    protected function getMassCollectionFactory()
     {
-        $params = $this->getRequest()->getParams();
-        $selected = [];
-        $collectionShipment = $this->filter->getCollection($this->shipmentCollectionFactory->create());
-        foreach ($collectionShipment as $shipment) {
-            array_push($selected, $shipment->getId());
-        }
-        if ($selected) {
-            foreach ($selected as $shipmentId) {
-                $shipment = $this->getShipmentbyId($shipmentId);
-                try {
-                    $order = $this->deleteShipment($shipmentId);
-                    $this->messageManager->addSuccessMessage(
-                        __(
-                            'Successfully deleted shipment #%1.',
-                            $shipment->getIncrementId()
-                        )
-                    );
-                } catch (\Exception $e) {
-                    $this->messageManager->addErrorMessage(
-                        __(
-                            'Error delete shipment #%1.',
-                            $shipment->getIncrementId()
-                        )
-                    );
-                }
-            }
-        }
+        return $this->shipmentCollectionFactory;
+    }
 
-        $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath('sales/shipment/');
-        if ($params['namespace'] == 'sales_order_view_shipment_grid' && isset($order)) {
-            $resultRedirect->setPath('sales/order/view', ['order_id' => $order->getId()]);
-        } else {
-            $resultRedirect->setPath('sales/shipment/');
-        }
-        return $resultRedirect;
+    protected function getIncrementIdByEntity($entity, $entityId)
+    {
+        return (string)$this->getShipmentById($entityId)->getIncrementId();
+    }
+
+    protected function deleteEntity($entityId)
+    {
+        return $this->delete->deleteShipment($entityId);
+    }
+
+    protected function getSuccessMessageTemplate()
+    {
+        return 'Successfully deleted shipment #%1.';
+    }
+
+    protected function getErrorMessageTemplate()
+    {
+        return 'Error delete shipment #%1.';
+    }
+
+    protected function getDefaultRedirectPath()
+    {
+        return 'sales/shipment/';
+    }
+
+    protected function getOrderViewNamespace()
+    {
+        return 'sales_order_view_shipment_grid';
     }
 
     /**
-     * Check permission via ACL resource
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Mavenbird_DeleteOrder::delete_order');
-    }
-
-    /**
-     * Delete shipment
-     *
-     * @param int $shipmentId
-     * @return \Magento\Sales\Model\Order
-     * @throws \Exception
-     */
-    protected function deleteShipment($shipmentId)
-    {
-        return $this->delete->deleteShipment($shipmentId);
-    }
-
-    /**
-     * Get shipment by id
-     *
      * @param int $shipmentId
      * @return \Magento\Sales\Model\Order\Shipment
      */
-    protected function getShipmentbyId($shipmentId)
+    protected function getShipmentById($shipmentId)
     {
         return $this->shipment->load($shipmentId);
     }

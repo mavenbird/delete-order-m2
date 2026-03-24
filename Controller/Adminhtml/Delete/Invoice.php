@@ -22,7 +22,7 @@ namespace Mavenbird\DeleteOrder\Controller\Adminhtml\Delete;
 
 use Magento\Backend\App\Action;
 
-class Invoice extends \Magento\Backend\App\Action
+class Invoice extends AbstractSingleDelete
 {
     /**
      * @var \Magento\Sales\Api\InvoiceRepositoryInterface
@@ -50,33 +50,33 @@ class Invoice extends \Magento\Backend\App\Action
         parent::__construct($context);
     }
 
-    /**
-     * Execute
-     *
-     * @return void
-     */
-    public function execute()
+    protected function getEntityIdParam()
     {
-        $invoiceId = $this->getRequest()->getParam('invoice_id');
-        $invoice = $this->invoiceRepository->get($invoiceId);
-        try {
-            $this->delete->deleteInvoice($invoiceId);
-            $this->messageManager->addSuccessMessage(__('Successfully deleted invoice #%1.', $invoice->getIncrementId()));
-        } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage(__('Error delete invoice #%1.', $invoice->getIncrementId()));
-        }
-        $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath('sales/invoice/');
-        return $resultRedirect;
+        return 'invoice_id';
     }
 
-    /**
-     * Allowed
-     *
-     * @return void
-     */
-    protected function _isAllowed()
+    protected function getEntityIncrementId($entityId)
     {
-        return $this->_authorization->isAllowed('Mavenbird_DeleteOrder::delete_order');
+        return (string)$this->invoiceRepository->get($entityId)->getIncrementId();
+    }
+
+    protected function deleteEntity($entityId)
+    {
+        $this->delete->deleteInvoice($entityId);
+    }
+
+    protected function getSuccessMessageTemplate()
+    {
+        return 'Successfully deleted invoice #%1.';
+    }
+
+    protected function getErrorMessageTemplate()
+    {
+        return 'Error delete invoice #%1.';
+    }
+
+    protected function getRedirectPath()
+    {
+        return 'sales/invoice/';
     }
 }

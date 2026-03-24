@@ -22,7 +22,7 @@ namespace Mavenbird\DeleteOrder\Controller\Adminhtml\Delete;
 
 use Magento\Backend\App\Action;
 
-class Creditmemo extends \Magento\Backend\App\Action
+class Creditmemo extends AbstractSingleDelete
 {
     /**
      * @var \Magento\Sales\Api\CreditmemoRepositoryInterface
@@ -49,33 +49,33 @@ class Creditmemo extends \Magento\Backend\App\Action
         parent::__construct($context);
     }
 
-    /**
-     * Execute
-     *
-     * @return void
-     */
-    public function execute()
+    protected function getEntityIdParam()
     {
-        $creditmemoId = $this->getRequest()->getParam('creditmemo_id');
-        $creditmemo = $this->creditmemoRepository->get($creditmemoId);
-        try {
-            $this->delete->deleteCreditmemo($creditmemoId);
-            $this->messageManager->addSuccessMessage(__('Successfully deleted credit memo #%1.', $creditmemo->getIncrementId()));
-        } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage(__('Error delete credit memo #%1.', $creditmemo->getIncrementId()));
-        }
-        $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath('sales/creditmemo/');
-        return $resultRedirect;
+        return 'creditmemo_id';
     }
 
-    /**
-     * Allowed
-     *
-     * @return void
-     */
-    protected function _isAllowed()
+    protected function getEntityIncrementId($entityId)
     {
-        return $this->_authorization->isAllowed('Mavenbird_DeleteOrder::delete_order');
+        return (string)$this->creditmemoRepository->get($entityId)->getIncrementId();
+    }
+
+    protected function deleteEntity($entityId)
+    {
+        $this->delete->deleteCreditmemo($entityId);
+    }
+
+    protected function getSuccessMessageTemplate()
+    {
+        return 'Successfully deleted credit memo #%1.';
+    }
+
+    protected function getErrorMessageTemplate()
+    {
+        return 'Error delete credit memo #%1.';
+    }
+
+    protected function getRedirectPath()
+    {
+        return 'sales/creditmemo/';
     }
 }

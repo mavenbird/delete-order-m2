@@ -20,65 +20,20 @@
 
 namespace Mavenbird\DeleteOrder\Plugin\Shipment;
 
-class PluginAfter extends \Mavenbird\DeleteOrder\Plugin\PluginAbstract
+class PluginAfter extends \Mavenbird\DeleteOrder\Plugin\AbstractDeleteButtonPlugin
 {
-    /**
-     * @var \Magento\Backend\Helper\Data
-     */
-    protected $data;
-
-    /**
-     * PluginAfter constructor.
-     * @param \Magento\Authorization\Model\Acl\AclRetriever $aclRetriever
-     * @param \Magento\Backend\Model\Auth\Session $authSession
-     * @param \Magento\Backend\Helper\Data $data
-     */
-    public function __construct(
-        \Magento\Authorization\Model\Acl\AclRetriever $aclRetriever,
-        \Magento\Backend\Model\Auth\Session $authSession,
-        \Magento\Backend\Helper\Data $data
-    ) {
-        parent::__construct($aclRetriever, $authSession);
-        $this->data = $data;
+    protected function getViewActionName()
+    {
+        return 'adminhtml_order_shipment_view';
     }
 
-    /**
-     * After Get Back Url
-     *
-     * @param \Magento\Shipping\Block\Adminhtml\View $subject
-     * @param [type] $result
-     * @return void
-     */
-    public function afterGetBackUrl(\Magento\Shipping\Block\Adminhtml\View $subject, $result)
+    protected function getDeleteRoute()
     {
-        if ($this->isAllowedResources()) {
-            $params = $subject->getRequest()->getParams();
-            $message = __('Are you sure you want to do this?');
-            if ($subject->getRequest()->getFullActionName() == 'adminhtml_order_shipment_view') {
-                $subject->addButton(
-                    'mavenbird-delete',
-                    ['label' => __('Delete'), 'onclick' => 'confirmSetLocation(\'' . $message . '\',\'' . $this->getDeleteUrl($params['shipment_id']) . '\')', 'class' => 'mavenbird-delete'],
-                    -1
-                );
-            }
-        }
-
-        return $result;
+        return 'deleteorder/delete/shipment';
     }
 
-    /**
-     * Delte Url
-     *
-     * @param [type] $shipmentId
-     * @return void
-     */
-    public function getDeleteUrl($shipmentId)
+    protected function getEntityParamName()
     {
-        return $this->data->getUrl(
-            'deleteorder/delete/shipment',
-            [
-                'shipment_id' => $shipmentId
-            ]
-        );
+        return 'shipment_id';
     }
 }

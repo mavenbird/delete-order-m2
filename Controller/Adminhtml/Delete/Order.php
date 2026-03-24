@@ -22,7 +22,7 @@ namespace Mavenbird\DeleteOrder\Controller\Adminhtml\Delete;
 
 use Magento\Backend\App\Action;
 
-class Order extends \Magento\Backend\App\Action
+class Order extends AbstractSingleDelete
 {
     /**
      * @var \Magento\Sales\Model\Order
@@ -50,34 +50,33 @@ class Order extends \Magento\Backend\App\Action
         parent::__construct($context);
     }
 
-    /**
-     * Execute
-     *
-     * @return void
-     */
-    public function execute()
+    protected function getEntityIdParam()
     {
-        $orderId = $this->getRequest()->getParam('order_id');
-        $order = $this->order->load($orderId);
-        $incrementId = $order->getIncrementId();
-        try {
-            $this->delete->deleteOrder($orderId);
-            $this->messageManager->addSuccessMessage(__('Successfully deleted order #%1.', $incrementId));
-        } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage(__('Error delete order #%1.', $incrementId));
-        }
-        $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath('sales/order/');
-        return $resultRedirect;
+        return 'order_id';
     }
 
-    /**
-     * Allowed
-     *
-     * @return void
-     */
-    protected function _isAllowed()
+    protected function getEntityIncrementId($entityId)
     {
-        return $this->_authorization->isAllowed('Mavenbird_DeleteOrder::delete_order');
+        return (string)$this->order->load($entityId)->getIncrementId();
+    }
+
+    protected function deleteEntity($entityId)
+    {
+        $this->delete->deleteOrder($entityId);
+    }
+
+    protected function getSuccessMessageTemplate()
+    {
+        return 'Successfully deleted order #%1.';
+    }
+
+    protected function getErrorMessageTemplate()
+    {
+        return 'Error delete order #%1.';
+    }
+
+    protected function getRedirectPath()
+    {
+        return 'sales/order/';
     }
 }

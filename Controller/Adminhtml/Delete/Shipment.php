@@ -22,7 +22,7 @@ namespace Mavenbird\DeleteOrder\Controller\Adminhtml\Delete;
 
 use Magento\Backend\App\Action;
 
-class Shipment extends \Magento\Backend\App\Action
+class Shipment extends AbstractSingleDelete
 {
     /**
      * @var \Magento\Sales\Model\Order\Shipment
@@ -50,33 +50,33 @@ class Shipment extends \Magento\Backend\App\Action
         parent::__construct($context);
     }
 
-    /**
-     * Execute
-     *
-     * @return void
-     */
-    public function execute()
+    protected function getEntityIdParam()
     {
-        $shipmentId = $this->getRequest()->getParam('shipment_id');
-        $shipment = $this->shipment->load($shipmentId);
-        try {
-            $this->delete->deleteShipment($shipmentId);
-            $this->messageManager->addSuccessMessage(__('Successfully deleted shipment #%1.', $shipment->getIncrementId()));
-        } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage(__('Error delete shipment #%1.', $shipment->getIncrementId()));
-        }
-        $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath('sales/shipment/');
-        return $resultRedirect;
+        return 'shipment_id';
     }
 
-    /**
-     * Allowed
-     *
-     * @return void
-     */
-    protected function _isAllowed()
+    protected function getEntityIncrementId($entityId)
     {
-        return $this->_authorization->isAllowed('Mavenbird_DeleteOrder::delete_order');
+        return (string)$this->shipment->load($entityId)->getIncrementId();
+    }
+
+    protected function deleteEntity($entityId)
+    {
+        $this->delete->deleteShipment($entityId);
+    }
+
+    protected function getSuccessMessageTemplate()
+    {
+        return 'Successfully deleted shipment #%1.';
+    }
+
+    protected function getErrorMessageTemplate()
+    {
+        return 'Error delete shipment #%1.';
+    }
+
+    protected function getRedirectPath()
+    {
+        return 'sales/shipment/';
     }
 }

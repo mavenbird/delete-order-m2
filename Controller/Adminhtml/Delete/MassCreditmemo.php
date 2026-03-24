@@ -21,13 +21,12 @@
 namespace Mavenbird\DeleteOrder\Controller\Adminhtml\Delete;
 
 use Mavenbird\DeleteOrder\Model\Creditmemo\Delete;
-use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Backend\App\Action\Context;
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Magento\Ui\Component\MassAction\Filter;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
 
-class MassCreditmemo extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
+class MassCreditmemo extends AbstractMassDelete
 {
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\Creditmemo\CollectionFactory
@@ -68,71 +67,38 @@ class MassCreditmemo extends \Magento\Sales\Controller\Adminhtml\Order\AbstractM
         $this->delete = $delete;
     }
 
-    /**
-     * Mass action
-     *
-     * @param AbstractCollection $collection
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Redirect|\Magento\Framework\Controller\ResultInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    protected function massAction(AbstractCollection $collection)
+    protected function getMassCollectionFactory()
     {
-        $params = $this->getRequest()->getParams();
-        $selected = [];
-        $collectionMemo = $this->filter->getCollection($this->memoCollectionFactory->create());
-        foreach ($collectionMemo as $memo) {
-            array_push($selected, $memo->getId());
-        }
-
-        if ($selected) {
-            foreach ($selected as $creditmemoId) {
-                $creditmemo = $this->creditmemoRepository->get($creditmemoId);
-                try {
-                    $order = $this->deleteCreditMemo($creditmemoId);
-                    $this->messageManager->addSuccessMessage(
-                        __(
-                            'Successfully deleted credit memo #%1.',
-                            $creditmemo->getIncrementId()
-                        )
-                    );
-                } catch (\Exception $e) {
-                    $this->messageManager->addErrorMessage(
-                        __(
-                            'Error delete credit memo #%1.',
-                            $creditmemo->getIncrementId()
-                        )
-                    );
-                }
-            }
-        }
-        $resultRedirect = $this->resultRedirectFactory->create();
-        if ($params['namespace'] == 'sales_order_view_creditmemo_grid' && isset($order)) {
-            $resultRedirect->setPath('sales/order/view', ['order_id' => $order->getId()]);
-        } else {
-            $resultRedirect->setPath('sales/creditmemo/');
-        }
-        return $resultRedirect;
+        return $this->memoCollectionFactory;
     }
 
-    /**
-     * Check permission via ACL resource
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
+    protected function getIncrementIdByEntity($entity, $entityId)
     {
-        return $this->_authorization->isAllowed('Mavenbird_DeleteOrder::delete_order');
+        return (string)$this->creditmemoRepository->get($entityId)->getIncrementId();
     }
 
-    /**
-     * Delete credit memo
-     *
-     * @param int $creditmemoId
-     * @return \Magento\Sales\Model\Order
-     * @throws \Exception
-     */
-    protected function deleteCreditMemo($creditmemoId)
+    protected function deleteEntity($entityId)
     {
-        return $this->delete->deleteCreditmemo($creditmemoId);
+        return $this->delete->deleteCreditmemo($entityId);
+    }
+
+    protected function getSuccessMessageTemplate()
+    {
+        return 'Successfully deleted credit memo #%1.';
+    }
+
+    protected function getErrorMessageTemplate()
+    {
+        return 'Error delete credit memo #%1.';
+    }
+
+    protected function getDefaultRedirectPath()
+    {
+        return 'sales/creditmemo/';
+    }
+
+    protected function getOrderViewNamespace()
+    {
+        return 'sales_order_view_creditmemo_grid';
     }
 }
