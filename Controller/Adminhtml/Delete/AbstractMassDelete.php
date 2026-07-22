@@ -26,6 +26,21 @@ use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 abstract class AbstractMassDelete extends AbstractMassAction
 {
     /**
+     * @var string
+     */
+    protected $successMessageTemplate;
+
+    /**
+     * @var string
+     */
+    protected $errorMessageTemplate;
+
+    /**
+     * @var string
+     */
+    protected $defaultRedirectPath;
+
+    /**
      * @param AbstractCollection $collection
      * @return \Magento\Framework\Controller\Result\Redirect
      */
@@ -41,9 +56,9 @@ abstract class AbstractMassDelete extends AbstractMassAction
 
             try {
                 $order = $this->deleteEntity($entityId);
-                $this->messageManager->addSuccessMessage(__($this->getSuccessMessageTemplate(), $incrementId));
+                $this->messageManager->addSuccessMessage(__($this->successMessageTemplate, $incrementId));
             } catch (\Exception $e) {
-                $this->messageManager->addErrorMessage(__($this->getErrorMessageTemplate(), $incrementId));
+                $this->messageManager->addErrorMessage(__($this->errorMessageTemplate, $incrementId));
             }
         }
 
@@ -52,7 +67,7 @@ abstract class AbstractMassDelete extends AbstractMassAction
         if ($orderViewNamespace && isset($params['namespace']) && $params['namespace'] === $orderViewNamespace && $order) {
             $resultRedirect->setPath('sales/order/view', ['order_id' => $order->getId()]);
         } else {
-            $resultRedirect->setPath($this->getDefaultRedirectPath());
+            $resultRedirect->setPath($this->defaultRedirectPath);
         }
 
         return $resultRedirect;
@@ -83,21 +98,6 @@ abstract class AbstractMassDelete extends AbstractMassAction
      * @return mixed
      */
     abstract protected function deleteEntity($entityId);
-
-    /**
-     * @return string
-     */
-    abstract protected function getSuccessMessageTemplate();
-
-    /**
-     * @return string
-     */
-    abstract protected function getErrorMessageTemplate();
-
-    /**
-     * @return string
-     */
-    abstract protected function getDefaultRedirectPath();
 
     /**
      * @return string|null

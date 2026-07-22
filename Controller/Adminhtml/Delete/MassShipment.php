@@ -64,6 +64,9 @@ class MassShipment extends AbstractMassDelete
         $this->shipmentCollectionFactory = $shipmentCollectionFactory;
         $this->shipment = $shipment;
         $this->delete = $delete;
+        $this->successMessageTemplate = 'Successfully deleted shipment #%1.';
+        $this->errorMessageTemplate = 'Error delete shipment #%1.';
+        $this->defaultRedirectPath = 'sales/shipment/';
     }
 
     protected function getMassCollectionFactory()
@@ -79,21 +82,6 @@ class MassShipment extends AbstractMassDelete
     protected function deleteEntity($entityId)
     {
         return $this->delete->deleteShipment($entityId);
-    }
-
-    protected function getSuccessMessageTemplate()
-    {
-        return 'Successfully deleted shipment #%1.';
-    }
-
-    protected function getErrorMessageTemplate()
-    {
-        return 'Error delete shipment #%1.';
-    }
-
-    protected function getDefaultRedirectPath()
-    {
-        return 'sales/shipment/';
     }
 
     protected function getOrderViewNamespace()

@@ -65,6 +65,9 @@ class MassOrder extends AbstractMassDelete
         $this->orderManagement = $orderManagement;
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->delete = $delete;
+        $this->successMessageTemplate = 'Successfully deleted order #%1.';
+        $this->errorMessageTemplate = 'Error delete order #%1.';
+        $this->defaultRedirectPath = 'sales/order/';
     }
 
     protected function getMassCollectionFactory()
@@ -80,20 +83,5 @@ class MassOrder extends AbstractMassDelete
     protected function deleteEntity($entityId)
     {
         return $this->delete->deleteOrder($entityId);
-    }
-
-    protected function getSuccessMessageTemplate()
-    {
-        return 'Successfully deleted order #%1.';
-    }
-
-    protected function getErrorMessageTemplate()
-    {
-        return 'Error delete order #%1.';
-    }
-
-    protected function getDefaultRedirectPath()
-    {
-        return 'sales/order/';
     }
 }

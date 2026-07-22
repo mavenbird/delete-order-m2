@@ -65,6 +65,9 @@ class MassCreditmemo extends AbstractMassDelete
         $this->memoCollectionFactory = $memoCollectionFactory;
         $this->creditmemoRepository = $creditmemoRepository;
         $this->delete = $delete;
+        $this->successMessageTemplate = 'Successfully deleted credit memo #%1.';
+        $this->errorMessageTemplate = 'Error delete credit memo #%1.';
+        $this->defaultRedirectPath = 'sales/creditmemo/';
     }
 
     protected function getMassCollectionFactory()
@@ -80,21 +83,6 @@ class MassCreditmemo extends AbstractMassDelete
     protected function deleteEntity($entityId)
     {
         return $this->delete->deleteCreditmemo($entityId);
-    }
-
-    protected function getSuccessMessageTemplate()
-    {
-        return 'Successfully deleted credit memo #%1.';
-    }
-
-    protected function getErrorMessageTemplate()
-    {
-        return 'Error delete credit memo #%1.';
-    }
-
-    protected function getDefaultRedirectPath()
-    {
-        return 'sales/creditmemo/';
     }
 
     protected function getOrderViewNamespace()

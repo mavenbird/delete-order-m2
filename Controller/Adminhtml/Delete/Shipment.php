@@ -47,12 +47,11 @@ class Shipment extends AbstractSingleDelete
     ) {
         $this->shipment = $shipment;
         $this->delete = $delete;
+        $this->entityIdParam = 'shipment_id';
+        $this->successMessageTemplate = 'Successfully deleted shipment #%1.';
+        $this->errorMessageTemplate = 'Error delete shipment #%1.';
+        $this->redirectPath = 'sales/shipment/';
         parent::__construct($context);
-    }
-
-    protected function getEntityIdParam()
-    {
-        return 'shipment_id';
     }
 
     protected function getEntityIncrementId($entityId)
@@ -63,20 +62,5 @@ class Shipment extends AbstractSingleDelete
     protected function deleteEntity($entityId)
     {
         $this->delete->deleteShipment($entityId);
-    }
-
-    protected function getSuccessMessageTemplate()
-    {
-        return 'Successfully deleted shipment #%1.';
-    }
-
-    protected function getErrorMessageTemplate()
-    {
-        return 'Error delete shipment #%1.';
-    }
-
-    protected function getRedirectPath()
-    {
-        return 'sales/shipment/';
     }
 }

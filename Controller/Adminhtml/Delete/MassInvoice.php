@@ -62,6 +62,9 @@ class MassInvoice extends AbstractMassDelete
         $this->invoiceCollectionFactory = $invoiceCollectionFactory;
         $this->invoiceRepository = $invoiceRepository;
         $this->delete = $delete;
+        $this->successMessageTemplate = 'Successfully deleted invoice #%1.';
+        $this->errorMessageTemplate = 'Error delete invoice #%1.';
+        $this->defaultRedirectPath = 'sales/invoice/';
     }
 
     protected function getMassCollectionFactory()
@@ -77,21 +80,6 @@ class MassInvoice extends AbstractMassDelete
     protected function deleteEntity($entityId)
     {
         return $this->delete->deleteInvoice($entityId);
-    }
-
-    protected function getSuccessMessageTemplate()
-    {
-        return 'Successfully deleted invoice #%1.';
-    }
-
-    protected function getErrorMessageTemplate()
-    {
-        return 'Error delete invoice #%1.';
-    }
-
-    protected function getDefaultRedirectPath()
-    {
-        return 'sales/invoice/';
     }
 
     protected function getOrderViewNamespace()

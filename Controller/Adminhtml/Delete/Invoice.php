@@ -47,12 +47,11 @@ class Invoice extends AbstractSingleDelete
     ) {
         $this->invoiceRepository = $invoiceRepository;
         $this->delete = $delete;
+        $this->entityIdParam = 'invoice_id';
+        $this->successMessageTemplate = 'Successfully deleted invoice #%1.';
+        $this->errorMessageTemplate = 'Error delete invoice #%1.';
+        $this->redirectPath = 'sales/invoice/';
         parent::__construct($context);
-    }
-
-    protected function getEntityIdParam()
-    {
-        return 'invoice_id';
     }
 
     protected function getEntityIncrementId($entityId)
@@ -63,20 +62,5 @@ class Invoice extends AbstractSingleDelete
     protected function deleteEntity($entityId)
     {
         $this->delete->deleteInvoice($entityId);
-    }
-
-    protected function getSuccessMessageTemplate()
-    {
-        return 'Successfully deleted invoice #%1.';
-    }
-
-    protected function getErrorMessageTemplate()
-    {
-        return 'Error delete invoice #%1.';
-    }
-
-    protected function getRedirectPath()
-    {
-        return 'sales/invoice/';
     }
 }

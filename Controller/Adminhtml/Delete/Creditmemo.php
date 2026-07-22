@@ -46,12 +46,11 @@ class Creditmemo extends AbstractSingleDelete
     ) {
         $this->creditmemoRepository = $creditmemoRepository;
         $this->delete = $delete;
+        $this->entityIdParam = 'creditmemo_id';
+        $this->successMessageTemplate = 'Successfully deleted credit memo #%1.';
+        $this->errorMessageTemplate = 'Error delete credit memo #%1.';
+        $this->redirectPath = 'sales/creditmemo/';
         parent::__construct($context);
-    }
-
-    protected function getEntityIdParam()
-    {
-        return 'creditmemo_id';
     }
 
     protected function getEntityIncrementId($entityId)
@@ -62,20 +61,5 @@ class Creditmemo extends AbstractSingleDelete
     protected function deleteEntity($entityId)
     {
         $this->delete->deleteCreditmemo($entityId);
-    }
-
-    protected function getSuccessMessageTemplate()
-    {
-        return 'Successfully deleted credit memo #%1.';
-    }
-
-    protected function getErrorMessageTemplate()
-    {
-        return 'Error delete credit memo #%1.';
-    }
-
-    protected function getRedirectPath()
-    {
-        return 'sales/creditmemo/';
     }
 }

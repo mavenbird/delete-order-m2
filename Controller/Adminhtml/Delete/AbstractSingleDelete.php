@@ -25,24 +25,44 @@ use Magento\Backend\App\Action;
 abstract class AbstractSingleDelete extends Action
 {
     /**
+     * @var string
+     */
+    protected $entityIdParam;
+
+    /**
+     * @var string
+     */
+    protected $successMessageTemplate;
+
+    /**
+     * @var string
+     */
+    protected $errorMessageTemplate;
+
+    /**
+     * @var string
+     */
+    protected $redirectPath;
+
+    /**
      * Execute
      *
      * @return \Magento\Framework\Controller\Result\Redirect
      */
     public function execute()
     {
-        $entityId = (int)$this->getRequest()->getParam($this->getEntityIdParam());
+        $entityId = (int)$this->getRequest()->getParam($this->entityIdParam);
         $incrementId = $this->getEntityIncrementId($entityId);
 
         try {
             $this->deleteEntity($entityId);
-            $this->messageManager->addSuccessMessage(__($this->getSuccessMessageTemplate(), $incrementId));
+            $this->messageManager->addSuccessMessage(__($this->successMessageTemplate, $incrementId));
         } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage(__($this->getErrorMessageTemplate(), $incrementId));
+            $this->messageManager->addErrorMessage(__($this->errorMessageTemplate, $incrementId));
         }
 
         $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath($this->getRedirectPath());
+        $resultRedirect->setPath($this->redirectPath);
         return $resultRedirect;
     }
 
@@ -55,11 +75,6 @@ abstract class AbstractSingleDelete extends Action
     }
 
     /**
-     * @return string
-     */
-    abstract protected function getEntityIdParam();
-
-    /**
      * @param int $entityId
      * @return string
      */
@@ -70,19 +85,4 @@ abstract class AbstractSingleDelete extends Action
      * @return void
      */
     abstract protected function deleteEntity($entityId);
-
-    /**
-     * @return string
-     */
-    abstract protected function getSuccessMessageTemplate();
-
-    /**
-     * @return string
-     */
-    abstract protected function getErrorMessageTemplate();
-
-    /**
-     * @return string
-     */
-    abstract protected function getRedirectPath();
 }

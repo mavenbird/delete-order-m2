@@ -47,12 +47,11 @@ class Order extends AbstractSingleDelete
     ) {
         $this->order = $order;
         $this->delete = $delete;
+        $this->entityIdParam = 'order_id';
+        $this->successMessageTemplate = 'Successfully deleted order #%1.';
+        $this->errorMessageTemplate = 'Error delete order #%1.';
+        $this->redirectPath = 'sales/order/';
         parent::__construct($context);
-    }
-
-    protected function getEntityIdParam()
-    {
-        return 'order_id';
     }
 
     protected function getEntityIncrementId($entityId)
@@ -63,20 +62,5 @@ class Order extends AbstractSingleDelete
     protected function deleteEntity($entityId)
     {
         $this->delete->deleteOrder($entityId);
-    }
-
-    protected function getSuccessMessageTemplate()
-    {
-        return 'Successfully deleted order #%1.';
-    }
-
-    protected function getErrorMessageTemplate()
-    {
-        return 'Error delete order #%1.';
-    }
-
-    protected function getRedirectPath()
-    {
-        return 'sales/order/';
     }
 }
